@@ -1,8 +1,14 @@
+using System;
 using UnityEngine;
 
 public class ShapeManager : MonoBehaviour
 {
-    [Header("Data")]
+	[Header(" Elements ")]
+	[SerializeField] private ShapeHolder shapeHolderPrefab;
+	[SerializeField] private Transform slotsParent;
+
+
+	[Header("Data")]
     [SerializeField] private Sprite[]shapeSprites;
 
 	public static ShapeManager instance;
@@ -25,14 +31,32 @@ public class ShapeManager : MonoBehaviour
 	void Start()
     {
 		GenerateShapes();
-
+		PopulateSlots();
 	}
 
-    // Update is called once per frame
-    void Update()
+	
+	// Update is called once per frame
+	void Update()
     {
         
     }
+
+	private void PopulateSlots()
+	{
+		for (int i = 0; i < slotsParent.childCount; i++)
+		{
+			// 在每个子节点位置生成一个 ShapeHolder，并设为同一父节点
+			Vector3 spawnPos = slotsParent.GetChild(i).position;
+			ShapeHolder holder = Instantiate(shapeHolderPrefab, spawnPos, Quaternion.identity, transform);
+
+			// 随机取一个形状与颜色
+			Shape shape = shapes.GetRandom();
+			Color color = colors.GetRandom();
+
+			// 配置
+			holder.Configure(shape, color);
+		}
+	}
 
 	private void GenerateShapes()
 	{
@@ -47,6 +71,7 @@ public class ShapeManager : MonoBehaviour
 
 			// 再把 Texture2D 转换成 Shape（里面是 Cell 网格）
 			shapes[i] = GenerateShapeFromTexture(tex);
+			shapes[i].tex = tex;
 		}
 	}
 

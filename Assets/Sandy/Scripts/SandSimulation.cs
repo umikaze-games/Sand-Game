@@ -15,6 +15,11 @@ public class SandSimulation : MonoBehaviour
 
 	[Header(" Data ")]
 	private Cell[,] grid;
+
+	private void Awake()
+	{
+		Application.targetFrameRate = 60;
+	}
 	void Start()
 	{
 		texture = new Texture2D(width, height);
