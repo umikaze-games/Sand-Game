@@ -166,6 +166,75 @@ MonoBehaviour:
   width: 128
   height: 192
   backgroundColor: {r: 0, g: 0, b: 0, a: 1}
+--- !u!1 &200494439
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 200494440}
+  - component: {fileID: 200494441}
+  m_Layer: 0
+  m_Name: ShapeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &200494440
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200494439}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &200494441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200494439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6057f26bc5236543aeff36d6d2a9bae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shapeSprites:
+  - {fileID: -136869936, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: -1554566857, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: -79951485, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: -2009548307, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: -316607845, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 1825700896, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 474459788, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 1898224708, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: -1341713546, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 905662481, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: -1872766946, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 779005862, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 589543597, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 1834563573, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 1421197137, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 1183618790, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 1453690577, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  - {fileID: 225446715, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
+  colors:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 0.037330627, b: 1, a: 1}
+  - {r: 0.0841192, g: 1, b: 0, a: 1}
+  - {r: 1, g: 0.9534039, b: 0, a: 1}
+  - {r: 1, g: 0, b: 0.93670225, a: 1}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,9 +372,42 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &514162707
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 514162708}
+  m_Layer: 0
+  m_Name: ShapePickupSection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &514162708
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 514162707}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 330585546}
   - {fileID: 157624792}
+  - {fileID: 200494440}
+  - {fileID: 514162708}

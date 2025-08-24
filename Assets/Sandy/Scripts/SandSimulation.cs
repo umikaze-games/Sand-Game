@@ -26,7 +26,7 @@ public class SandSimulation : MonoBehaviour
 			for (int x = 0; x < width; x++)
 				grid[x, y].color = backgroundColor;
 
-		grid[width / 2, height / 2] = new Cell { type = EMaterialType.Sand, color = Color.yellow };
+		//grid[width / 2, height / 2] = new Cell { type = EMaterialType.Sand, color = Color.yellow };
 		UpdateTexture();
 
 		renderer = gameObject.AddComponent<SpriteRenderer>();
@@ -47,22 +47,49 @@ public class SandSimulation : MonoBehaviour
 
 	private void HandleInput()
 	{
-		if (!Input.GetMouseButton(0))   // 鼠标左键“按住”检测；想要“点一下”请用 GetMouseButtonDown(0)
+		if (!Input.GetMouseButtonDown(0))
 			return;
 
-		// 屏幕坐标 → 世界坐标
-		Vector3 worldClickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		// 把鼠标屏幕坐标转换为世界坐标
+		Vector3 worldclickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-		// 世界坐标 → 网格坐标(像素格)
-		Vector2Int gridCoords = WorldToGrid(worldClickedPosition);
+		// 再把世界坐标转换为网格坐标
+		Vector2Int gridCoords = WorldToGrid(worldclickedPosition);
 
-		if (!IsInBounds(gridCoords))    // 边界检查
-			return;
+		// 随机取一个 Shape（形状），和一个颜色
+		Shape randomShape = ShapeManager.instance.Shapes.GetRandom();
+		Color randomColor = ShapeManager.instance.Colors.GetRandom();
 
-		// 在网格上“落一粒沙”
-		Color color = Random.ColorHSV(0, 1, .8f, 1);  // 高饱和度随机色
-		grid[gridCoords.x, gridCoords.y] = new Cell { type = EMaterialType.Sand, color = color };
+		// 把这个形状放到 grid 上
+		DropShape(randomShape, randomColor, gridCoords);
 	}
+
+	private void DropShape(Shape shape, Color color, Vector2Int gridCoords)
+	{
+		for (int y = 0; y < shape.height; y++)
+		{
+			for (int x = 0; x < shape.width; x++)
+			{
+				// 把 Shape 内部坐标 (x,y) 映射到全局 grid 的坐标
+				int texX = gridCoords.x - (shape.width / 2) + x;
+				int texY = gridCoords.y - (shape.height / 2) + y;
+
+				// 边界检查 或 跳过空单元格
+				if (!IsInBounds(new Vector2Int(texX, texY)) || shape.cells[x, y].type == EMaterialType.Empty)
+					continue;
+
+				// 取出 Shape 的一个单元格
+				Cell cell = shape.cells[x, y];
+
+				// 给它上色（使用随机色）
+				cell.color = color;
+
+				// 写入到全局 grid
+				grid[texX, texY] = cell;
+			}
+		}
+	}
+
 
 	private bool IsInBounds(Vector2Int coords)
 	{
@@ -92,50 +119,54 @@ public class SandSimulation : MonoBehaviour
 
 	private void SimulateSand()
 	{
-		for (int y = 1; y < height; y++)          // 从 y=1 开始，一直到 height-1（底→上）
+		// 仍然从下往上扫，保证同一帧里每粒沙子最多下落一次
+		for (int y = 1; y < height; y++)
 		{
-			for (int x = 0; x < width; x++)
-			{
-				if (grid[x, y].type != EMaterialType.Sand)  // 只处理沙子格子
-					continue;
+			// 每一行交替左右方向；再叠加帧数扰动，减少视觉条纹
+			bool rightToLeft = ((y & 1) == (Time.frameCount & 1));
 
-				TryMoveSand(x, y);
+			if (rightToLeft)
+			{
+				for (int x = width - 1; x >= 0; x--)
+				{
+					if (grid[x, y].type != EMaterialType.Sand) continue;
+					TryMoveSand(x, y);
+				}
+			}
+			else
+			{
+				for (int x = 0; x < width; x++)
+				{
+					if (grid[x, y].type != EMaterialType.Sand) continue;
+					TryMoveSand(x, y);
+				}
 			}
 		}
 	}
 
+
 	private void TryMoveSand(int x, int y)
 	{
-		// 边缘：交给专用处理，避免 x±1 越界
+		// Border
 		if (x == 0 || x == width - 1)
 		{
 			HandleBorder(x, y);
 			return;
 		}
 
-		// 1) 直落
+		// Below
 		if (grid[x, y - 1].type == EMaterialType.Empty)
-		{
 			Swap(x, y, x, y - 1);
-			return;
-		}
 
-		// 2) 斜落：左右随机，防止偏向
-		int dir = UnityEngine.Random.value < 0.5f ? -1 : 1; // -1=左, +1=右
-		if (grid[x + dir, y - 1].type == EMaterialType.Empty)
-		{
-			Swap(x, y, x + dir, y - 1);
-			return;
-		}
-		if (grid[x - dir, y - 1].type == EMaterialType.Empty)
-		{
-			Swap(x, y, x - dir, y - 1);
-			return;
-		}
+		// Down Right
+		else if (grid[x + 1, y - 1].type == EMaterialType.Empty)
+			Swap(x, y, x + 1, y - 1);
 
-		// （可选）与水互换
-		// if (grid[x, y - 1].type == EMaterialType.Water) Swap(x, y, x, y - 1);
+		// Down Left
+		else if (grid[x - 1, y - 1].type == EMaterialType.Empty)
+			Swap(x, y, x - 1, y - 1);
 	}
+
 
 	private void HandleBorder(int x, int y)
 	{

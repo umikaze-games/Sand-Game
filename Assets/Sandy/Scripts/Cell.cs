@@ -4,7 +4,6 @@ public enum EMaterialType
 {
 	Empty = 0,
 	Sand = 1,
-	Water = 2
 }
 
 public struct Cell
