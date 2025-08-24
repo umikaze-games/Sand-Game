@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public class SandSimulation : MonoBehaviour
 {
+	public static SandSimulation instance;
+
 	[Header(" Elements ")]
 	private SpriteRenderer renderer;
 	private Texture2D texture;
@@ -16,10 +19,25 @@ public class SandSimulation : MonoBehaviour
 	[Header(" Data ")]
 	private Cell[,] grid;
 
+	public static float maxX;
+	public static float maxY;
+
 	private void Awake()
 	{
 		Application.targetFrameRate = 60;
+		InputManager.shapeDropped += OnShapeDropped;
+
+		if (instance == null) { instance = this; }
+		else { Destroy(gameObject); }
 	}
+
+
+	private void OnDisable()
+	{
+		InputManager.shapeDropped -= OnShapeDropped;
+	}
+
+
 	void Start()
 	{
 		texture = new Texture2D(width, height);
@@ -31,8 +49,10 @@ public class SandSimulation : MonoBehaviour
 			for (int x = 0; x < width; x++)
 				grid[x, y].color = backgroundColor;
 
-		//grid[width / 2, height / 2] = new Cell { type = EMaterialType.Sand, color = Color.yellow };
+		
 		UpdateTexture();
+
+		CalculateBounds();
 
 		renderer = gameObject.AddComponent<SpriteRenderer>();
 		renderer.sprite = Sprite.Create(
@@ -42,12 +62,20 @@ public class SandSimulation : MonoBehaviour
 			100
 		);
 	}
+
+
 	void Update()
 	{
-		HandleInput();
+		//HandleInput();
 		SimulateSand();
 		UpdateTexture();
 
+	}
+
+	private void CalculateBounds()
+	{
+		maxX = (float)width / 200f;
+		maxY= (float)height / 200f;	
 	}
 
 	private void HandleInput()
@@ -197,4 +225,40 @@ public class SandSimulation : MonoBehaviour
 		grid[x1, y1] = grid[x2, y2]; 
 		grid[x2, y2] = temp;
 	}
+
+	private void OnShapeDropped(ShapeHolder shapeHolder)
+	{
+		// 1. 把世界坐标转换为网格坐标
+		Vector2Int gridCoords = WorldToGrid(shapeHolder.transform.position);
+
+		// 2. 调用 DropShape，把形状放到网格上
+		DropShape(shapeHolder.Shape, shapeHolder.Color, gridCoords);
+
+		Destroy(shapeHolder.gameObject);
+	}
+
+	public bool CanDropShape(ShapeHolder holder)
+	{
+		Shape shape = holder.Shape;
+		Vector2Int gridCoords = WorldToGrid(holder.transform.position);
+
+		for (int y = 0; y < shape.height; y++)
+		{
+			for (int x = 0; x < shape.width; x++)
+			{
+				int texX = gridCoords.x - (shape.width / 2) + x;
+				int texY = gridCoords.y - (shape.height / 2) + y;
+
+				if (IsInBounds(new Vector2Int(texX, texY))
+					&& shape.cells[x, y].type != EMaterialType.Empty
+					&& grid[texX, texY].type != EMaterialType.Empty)
+				{
+					return false; // 发现有冲突：格子里已经有东西了
+				}
+			}
+		}
+
+		return true; // 所有格子都合法，可以放置
+	}
+
 }

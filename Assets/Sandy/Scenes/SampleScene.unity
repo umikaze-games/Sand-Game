@@ -455,7 +455,8 @@ MonoBehaviour:
   shapeHolderMask:
     serializedVersion: 2
     m_Bits: 256
-  moveSpeed: {x: 1.8, y: 3.2}
+  moveSpeed: {x: 3, y: 2}
+  dropYThreshold: -0.2
 --- !u!4 &1446342980
 Transform:
   m_ObjectHideFlags: 0
@@ -485,7 +486,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1110624571914561078, guid: 0b6b10ea90533724aa30c6ab56b6ffcb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.3
+      value: -1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1110624571914561078, guid: 0b6b10ea90533724aa30c6ab56b6ffcb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -542,7 +543,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1110624571914561078, guid: 0b6b10ea90533724aa30c6ab56b6ffcb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.3
+      value: -1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1110624571914561078, guid: 0b6b10ea90533724aa30c6ab56b6ffcb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -599,7 +600,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1110624571914561078, guid: 0b6b10ea90533724aa30c6ab56b6ffcb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.3
+      value: -1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1110624571914561078, guid: 0b6b10ea90533724aa30c6ab56b6ffcb, type: 3}
       propertyPath: m_LocalPosition.y

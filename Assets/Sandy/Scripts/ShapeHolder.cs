@@ -1,12 +1,27 @@
 using UnityEngine;
-
+using System;
 public class ShapeHolder : MonoBehaviour
 {
+	
 	[Header(" Elements ")]
 	[SerializeField] private SpriteRenderer renderer;
 
+	private Shape shape;
+	public Shape Shape => shape;
+
+	private Color color;
+	public Color Color => color;
+	public Bounds Bounds
+	=> renderer.bounds;
+	private void Awake()
+	{
+		
+	}
 	public void Configure(Shape shape, Color color)
 	{
+		this.shape = shape;
+		this.color = color;
+
 		// 从 shape 中取出原始纹理
 		Texture2D tex = shape.tex;
 
@@ -35,5 +50,13 @@ public class ShapeHolder : MonoBehaviour
 			100
 		);
 	}
+	public void Pickup()
+=> renderer.transform.localScale = Vector3.one;
+
+	public void PutBack()
+		=> renderer.transform.localScale = Vector3.one * 0.8f;
+
+
+
 }
 

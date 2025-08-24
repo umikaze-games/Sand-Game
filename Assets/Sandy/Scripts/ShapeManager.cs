@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ShapeManager : MonoBehaviour
 {
+	public static ShapeManager instance;
+
 	[Header(" Elements ")]
 	[SerializeField] private ShapeHolder shapeHolderPrefab;
 	[SerializeField] private Transform slotsParent;
@@ -11,14 +13,14 @@ public class ShapeManager : MonoBehaviour
 	[Header("Data")]
     [SerializeField] private Sprite[]shapeSprites;
 
-	public static ShapeManager instance;
-
 	private Shape[] shapes;
 	public Shape[] Shapes=>shapes;
 
 	[SerializeField]
 	private Color[] colors;
 	public Color[] Colors => colors;
+
+	private int shapeDroppedCounter;
 
 	private void Awake()
 	{
@@ -27,6 +29,13 @@ public class ShapeManager : MonoBehaviour
 			instance = this;
 		}
 		else { Destroy(gameObject); }
+
+		InputManager.shapeDropped += OnShapeDropped;
+	}
+
+	private void OnDisable()
+	{
+		InputManager.shapeDropped -= OnShapeDropped;
 	}
 	void Start()
     {
@@ -115,5 +124,17 @@ public class ShapeManager : MonoBehaviour
 
 		return shape;
 	}
+
+	private void OnShapeDropped(ShapeHolder holder)
+	{
+		shapeDroppedCounter++; // 统计已经放下了几个 Shape
+
+		if (shapeDroppedCounter >= 3)
+		{
+			shapeDroppedCounter = 0; // 清零计数器
+			PopulateSlots();         // 重新生成新的 Shape
+		}
+	}
+
 
 }
