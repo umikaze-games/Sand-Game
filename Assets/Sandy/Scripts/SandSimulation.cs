@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
@@ -22,6 +23,8 @@ public class SandSimulation : MonoBehaviour
 	public static float maxX;
 	public static float maxY;
 
+	private bool sandMoved;
+	private bool searchedForMatch;
 	private void Awake()
 	{
 		Application.targetFrameRate = 60;
@@ -68,9 +71,42 @@ public class SandSimulation : MonoBehaviour
 	{
 		//HandleInput();
 		SimulateSand();
+		if (!sandMoved&&!searchedForMatch)
+		{
+			TryFindMatch();
+		}
+
 		UpdateTexture();
 
 	}
+
+	private void TryFindMatch()
+	{
+		searchedForMatch = true;
+
+		for (int i = 0; i < ShapeManager.instance.Colors.Length; i++)
+		{
+			Color color = ShapeManager.instance.Colors[i];
+
+			// 调用 TexturePathChecker：检测这个颜色是否有从右边连到左边的通路
+			if (TexturePathChecker.TryGetConnectedRegion(texture, color, out HashSet<Vector2Int> coords))
+			{
+				// 如果有连通区域，把所有坐标对应的格子清空
+				foreach (Vector2Int coord in coords)
+				{
+					grid[coord.x, coord.y].type = EMaterialType.Empty;
+					grid[coord.x, coord.y].color = backgroundColor;
+				}
+
+				// 刷新贴图
+				UpdateTexture();
+
+				// 找到一个匹配就退出，不继续检测其他颜色
+				break;
+			}
+		}
+	}
+
 
 	private void CalculateBounds()
 	{
@@ -152,6 +188,7 @@ public class SandSimulation : MonoBehaviour
 
 	private void SimulateSand()
 	{
+		sandMoved = false;
 		// 仍然从下往上扫，保证同一帧里每粒沙子最多下落一次
 		for (int y = 1; y < height; y++)
 		{
@@ -224,6 +261,8 @@ public class SandSimulation : MonoBehaviour
 		Cell temp = grid[x1, y1];   
 		grid[x1, y1] = grid[x2, y2]; 
 		grid[x2, y2] = temp;
+		sandMoved = true;
+		searchedForMatch = false;
 	}
 
 	private void OnShapeDropped(ShapeHolder shapeHolder)

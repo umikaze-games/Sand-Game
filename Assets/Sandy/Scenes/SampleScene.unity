@@ -233,10 +233,8 @@ MonoBehaviour:
   - {fileID: 225446715, guid: 50e02a96aeb89f741b739fccb0996508, type: 3}
   colors:
   - {r: 1, g: 0, b: 0, a: 1}
-  - {r: 0, g: 0.037330627, b: 1, a: 1}
-  - {r: 0.0841192, g: 1, b: 0, a: 1}
-  - {r: 1, g: 0.9534039, b: 0, a: 1}
-  - {r: 1, g: 0, b: 0.93670225, a: 1}
+  - {r: 0, g: 1, b: 0.03994465, a: 1}
+  - {r: 0, g: 0.056171417, b: 1, a: 1}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -455,7 +453,7 @@ MonoBehaviour:
   shapeHolderMask:
     serializedVersion: 2
     m_Bits: 256
-  moveSpeed: {x: 3, y: 2}
+  moveSpeed: {x: 3.7, y: 2}
   dropYThreshold: -0.2
 --- !u!4 &1446342980
 Transform:
