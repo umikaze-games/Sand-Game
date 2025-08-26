@@ -1,5 +1,6 @@
-using UnityEngine;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 public class ShapeHolder : MonoBehaviour
 {
 	
@@ -11,8 +12,8 @@ public class ShapeHolder : MonoBehaviour
 
 	private Color color;
 	public Color Color => color;
-	public Bounds Bounds
-	=> renderer.bounds;
+	public Bounds Bounds=> renderer.bounds;
+
 	private void Awake()
 	{
 		

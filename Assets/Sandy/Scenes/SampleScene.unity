@@ -454,7 +454,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   moveSpeed: {x: 3.7, y: 2}
-  dropYThreshold: -0.2
+  dropYThreshold: -0.5
 --- !u!4 &1446342980
 Transform:
   m_ObjectHideFlags: 0

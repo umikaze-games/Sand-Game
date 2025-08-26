@@ -69,14 +69,17 @@ public class SandSimulation : MonoBehaviour
 
 	void Update()
 	{
-		//HandleInput();
-		SimulateSand();
-		if (!sandMoved&&!searchedForMatch)
+		for (int i = 0; i < 3; i++)
 		{
-			TryFindMatch();
-		}
+			SimulateSand();
 
-		UpdateTexture();
+			if (!sandMoved && !searchedForMatch)
+			{
+				TryFindMatch();
+			}
+
+			UpdateTexture();
+		}
 
 	}
 
