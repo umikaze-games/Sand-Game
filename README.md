@@ -16,7 +16,7 @@ A **Unity-based sand simulation & puzzle**. Players drag randomly generated shap
 ## 📷 Demo
 > *(Optional)* Add a GIF or screenshot here:
 >
-> `![Sand Simulation](docs/sand-sim.gif)`
+![Sand Simulation Demo](docs/sand-sim.gif)
 
 ---
 
