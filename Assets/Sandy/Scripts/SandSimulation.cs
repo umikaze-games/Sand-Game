@@ -25,6 +25,9 @@ public class SandSimulation : MonoBehaviour
 
 	private bool sandMoved;
 	private bool searchedForMatch;
+
+	public static Action<string> clearEvent;
+	public static Action<string> dropEvent;
 	private void Awake()
 	{
 		Application.targetFrameRate = 60;
@@ -103,7 +106,7 @@ public class SandSimulation : MonoBehaviour
 
 				// 刷新贴图
 				UpdateTexture();
-
+				RaiseClearEvent("clear");
 				// 找到一个匹配就退出，不继续检测其他颜色
 				break;
 			}
@@ -215,6 +218,7 @@ public class SandSimulation : MonoBehaviour
 				}
 			}
 		}
+
 	}
 
 
@@ -238,6 +242,7 @@ public class SandSimulation : MonoBehaviour
 		// Down Left
 		else if (grid[x - 1, y - 1].type == EMaterialType.Empty)
 			Swap(x, y, x - 1, y - 1);
+		
 	}
 
 
@@ -275,6 +280,7 @@ public class SandSimulation : MonoBehaviour
 
 		// 2. 调用 DropShape，把形状放到网格上
 		DropShape(shapeHolder.Shape, shapeHolder.Color, gridCoords);
+	
 
 		Destroy(shapeHolder.gameObject);
 	}
@@ -301,6 +307,16 @@ public class SandSimulation : MonoBehaviour
 		}
 
 		return true; // 所有格子都合法，可以放置
+	}
+
+	public void RaiseClearEvent(string name)
+	{ 
+		clearEvent.Invoke(name);
+	}
+
+	public void RaiseDropEvent(string name)
+	{
+		dropEvent.Invoke(name);
 	}
 
 }
