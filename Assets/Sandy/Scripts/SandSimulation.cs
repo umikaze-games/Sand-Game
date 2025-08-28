@@ -86,6 +86,7 @@ public class SandSimulation : MonoBehaviour
 
 	}
 
+	// Search for connected region of same color, clear if found
 	private void TryFindMatch()
 	{
 		searchedForMatch = true;
@@ -94,26 +95,24 @@ public class SandSimulation : MonoBehaviour
 		{
 			Color color = ShapeManager.instance.Colors[i];
 
-			// 调用 TexturePathChecker：检测这个颜色是否有从右边连到左边的通路
+
 			if (TexturePathChecker.TryGetConnectedRegion(texture, color, out HashSet<Vector2Int> coords))
 			{
-				// 如果有连通区域，把所有坐标对应的格子清空
+
 				foreach (Vector2Int coord in coords)
 				{
 					grid[coord.x, coord.y].type = EMaterialType.Empty;
 					grid[coord.x, coord.y].color = backgroundColor;
 				}
 
-				// 刷新贴图
 				UpdateTexture();
 				RaiseClearEvent("clear");
-				// 找到一个匹配就退出，不继续检测其他颜色
 				break;
 			}
 		}
 	}
 
-
+	// Compute world-space bounds for dragging shapes
 	private void CalculateBounds()
 	{
 		maxX = (float)width / 200f;
@@ -125,63 +124,54 @@ public class SandSimulation : MonoBehaviour
 		if (!Input.GetMouseButtonDown(0))
 			return;
 
-		// 把鼠标屏幕坐标转换为世界坐标
 		Vector3 worldclickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-		// 再把世界坐标转换为网格坐标
 		Vector2Int gridCoords = WorldToGrid(worldclickedPosition);
-
-		// 随机取一个 Shape（形状），和一个颜色
 		Shape randomShape = ShapeManager.instance.Shapes.GetRandom();
 		Color randomColor = ShapeManager.instance.Colors.GetRandom();
 
-		// 把这个形状放到 grid 上
 		DropShape(randomShape, randomColor, gridCoords);
 	}
 
+	// Place shape cells into grid at specified coordinates
 	private void DropShape(Shape shape, Color color, Vector2Int gridCoords)
 	{
 		for (int y = 0; y < shape.height; y++)
 		{
 			for (int x = 0; x < shape.width; x++)
 			{
-				// 把 Shape 内部坐标 (x,y) 映射到全局 grid 的坐标
 				int texX = gridCoords.x - (shape.width / 2) + x;
 				int texY = gridCoords.y - (shape.height / 2) + y;
 
-				// 边界检查 或 跳过空单元格
 				if (!IsInBounds(new Vector2Int(texX, texY)) || shape.cells[x, y].type == EMaterialType.Empty)
 					continue;
 
-				// 取出 Shape 的一个单元格
 				Cell cell = shape.cells[x, y];
-
-				// 给它上色（使用随机色）
 				cell.color = color;
-
-				// 写入到全局 grid
 				grid[texX, texY] = cell;
 			}
 		}
 	}
 
-
+	// Check if coordinates are inside grid
 	private bool IsInBounds(Vector2Int coords)
 	{
 		return coords.x >= 0 && coords.x < width
 			&& coords.y >= 0 && coords.y < height;
 	}
 
+	// Convert world position into grid coordinates
 	private Vector2Int WorldToGrid(Vector3 worldPos)
 	{
-		// 转到“物体局部空间”，自动抵消位置/旋转/缩放的影响
+	
 		Vector3 local = transform.InverseTransformPoint(worldPos);
 
-		// 以 pivot=中心 为基准：+ width/2、height/2 把原点从中心移到左下角
 		int x = Mathf.FloorToInt(local.x * 100 + width * 0.5f);
 		int y = Mathf.FloorToInt(local.y * 100 + height * 0.5f);
 		return new Vector2Int(x, y);
 	}
+
+	// Write grid colors into texture and apply
 	private void UpdateTexture()
 	{
 		for (int y = 0; y < height; y++)
@@ -191,14 +181,12 @@ public class SandSimulation : MonoBehaviour
 		texture.Apply();
 	}
 
-
+	// Perform one step of sand falling simulation
 	private void SimulateSand()
 	{
 		sandMoved = false;
-		// 仍然从下往上扫，保证同一帧里每粒沙子最多下落一次
 		for (int y = 1; y < height; y++)
 		{
-			// 每一行交替左右方向；再叠加帧数扰动，减少视觉条纹
 			bool rightToLeft = ((y & 1) == (Time.frameCount & 1));
 
 			if (rightToLeft)
@@ -221,7 +209,7 @@ public class SandSimulation : MonoBehaviour
 
 	}
 
-
+	// Attempt to move sand down, down-right, or down-left
 	private void TryMoveSand(int x, int y)
 	{
 		// Border
@@ -245,17 +233,15 @@ public class SandSimulation : MonoBehaviour
 		
 	}
 
-
+	// Special movement logic for sand at left/right border
 	private void HandleBorder(int x, int y)
 	{
-		// 先直落
 		if (y > 0 && grid[x, y - 1].type == EMaterialType.Empty)
 		{
 			Swap(x, y, x, y - 1);
 			return;
 		}
 
-		// 只能朝「场内」的那一侧斜落
 		int dir = (x == 0) ? +1 : -1;
 		if (y > 0 && (uint)(x + dir) < (uint)width &&
 			grid[x + dir, y - 1].type == EMaterialType.Empty)
@@ -264,6 +250,7 @@ public class SandSimulation : MonoBehaviour
 		}
 	}
 
+	// Swap two cells and mark sand as moved
 	private void Swap(int x1, int y1, int x2, int y2)
 	{
 		Cell temp = grid[x1, y1];   
@@ -273,18 +260,16 @@ public class SandSimulation : MonoBehaviour
 		searchedForMatch = false;
 	}
 
+	// Called when a shape is dropped: write its cells to grid
 	private void OnShapeDropped(ShapeHolder shapeHolder)
 	{
-		// 1. 把世界坐标转换为网格坐标
 		Vector2Int gridCoords = WorldToGrid(shapeHolder.transform.position);
 
-		// 2. 调用 DropShape，把形状放到网格上
 		DropShape(shapeHolder.Shape, shapeHolder.Color, gridCoords);
-	
-
 		Destroy(shapeHolder.gameObject);
 	}
 
+	// Check if a shape can be dropped without collision
 	public bool CanDropShape(ShapeHolder holder)
 	{
 		Shape shape = holder.Shape;
@@ -301,19 +286,21 @@ public class SandSimulation : MonoBehaviour
 					&& shape.cells[x, y].type != EMaterialType.Empty
 					&& grid[texX, texY].type != EMaterialType.Empty)
 				{
-					return false; // 发现有冲突：格子里已经有东西了
+					return false;
 				}
 			}
 		}
 
-		return true; // 所有格子都合法，可以放置
+		return true;
 	}
 
+	// Trigger clear event callback
 	public void RaiseClearEvent(string name)
 	{ 
 		clearEvent.Invoke(name);
 	}
 
+	// Trigger drop event callback
 	public void RaiseDropEvent(string name)
 	{
 		dropEvent.Invoke(name);

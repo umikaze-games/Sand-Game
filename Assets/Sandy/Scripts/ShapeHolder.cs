@@ -13,37 +13,30 @@ public class ShapeHolder : MonoBehaviour
 	private Color color;
 	public Color Color => color;
 	public Bounds Bounds=> renderer.bounds;
-
-	private void Awake()
-	{
-		
-	}
 	public void Configure(Shape shape, Color color)
 	{
+		// Assign shape and color, then generate a recolored texture
 		this.shape = shape;
 		this.color = color;
 
-		// 从 shape 中取出原始纹理
 		Texture2D tex = shape.tex;
-
-		// 新建一个和原始纹理相同大小的纹理
 		Texture2D newTex = new Texture2D(tex.width, tex.height);
-		newTex.filterMode = FilterMode.Point;  // 像素风格（不插值）
+		newTex.filterMode = FilterMode.Point;
 
-		// 拷贝颜色数据
 		Color[] colors = tex.GetPixels();
 
+		// Replace non-transparent pixels with chosen color
 		for (int i = 0; i < colors.Length; i++)
 		{
-			if (colors[i].a > .1f)   // 如果这个像素的透明度 > 0.1（忽略透明区域）
-				colors[i] = color;   // 把它换成传入的颜色
+			if (colors[i].a > .1f)
+				colors[i] = color;
 		}
 
 
 		newTex.SetPixels(colors);
 		newTex.Apply();
 
-		// 生成一个新的 Sprite 并赋值给 SpriteRenderer
+		// Create sprite from the new texture and assign to renderer
 		renderer.sprite = Sprite.Create(
 			newTex,
 			new Rect(0, 0, newTex.width, newTex.height),
@@ -51,9 +44,12 @@ public class ShapeHolder : MonoBehaviour
 			100
 		);
 	}
+
+	// Reset scale to full size when picked up
 	public void Pickup()
 => renderer.transform.localScale = Vector3.one;
 
+	// Scale down slightly when put back
 	public void PutBack()
 		=> renderer.transform.localScale = Vector3.one * 0.8f;
 
