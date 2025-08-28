@@ -11,10 +11,10 @@ public class ShapeManager : MonoBehaviour
 
 
 	[Header("Data")]
-    [SerializeField] private Sprite[]shapeSprites;
+	[SerializeField] private Sprite[] shapeSprites;
 
 	private Shape[] shapes;
-	public Shape[] Shapes=>shapes;
+	public Shape[] Shapes => shapes;
 
 	[SerializeField]
 	private Color[] colors;
@@ -38,52 +38,42 @@ public class ShapeManager : MonoBehaviour
 		InputManager.shapeDropped -= OnShapeDropped;
 	}
 	void Start()
-    {
+	{
 		GenerateShapes();
 		PopulateSlots();
 	}
 
-	
-	// Update is called once per frame
-	void Update()
-    {
-        
-    }
-
+	// Spawn ShapeHolders into all slot positions with random shape & color
 	private void PopulateSlots()
 	{
 		for (int i = 0; i < slotsParent.childCount; i++)
 		{
-			// 在每个子节点位置生成一个 ShapeHolder，并设为同一父节点
 			Vector3 spawnPos = slotsParent.GetChild(i).position;
 			ShapeHolder holder = Instantiate(shapeHolderPrefab, spawnPos, Quaternion.identity, transform);
 
-			// 随机取一个形状与颜色
 			Shape shape = shapes.GetRandom();
 			Color color = colors.GetRandom();
 
-			// 配置
 			holder.Configure(shape, color);
 		}
 	}
 
+	// Convert all sprites into Shape objects
 	private void GenerateShapes()
 	{
-		// 创建一个 Shape 数组，长度与 shapeSprites 一样
 		shapes = new Shape[shapeSprites.Length];
 
-		// 遍历所有的 Sprite
 		for (int i = 0; i < shapes.Length; i++)
 		{
-			// 先把 Sprite 转换成可读的 Texture2D
+
 			Texture2D tex = ExtractTextureFromSprite(shapeSprites[i]);
 
-			// 再把 Texture2D 转换成 Shape（里面是 Cell 网格）
 			shapes[i] = GenerateShapeFromTexture(tex);
 			shapes[i].tex = tex;
 		}
 	}
 
+	// Create a readable Texture2D from a Sprite
 	private Texture2D ExtractTextureFromSprite(Sprite sprite)
 	{
 		Texture2D tex = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
@@ -100,24 +90,21 @@ public class ShapeManager : MonoBehaviour
 
 		return tex;
 	}
+
+	// Generate Shape (grid of cells) from a texture
 	private Shape GenerateShapeFromTexture(Texture2D tex)
 	{
-		// 用传入的纹理宽高来生成一个 Shape 对象
 		Shape shape = new Shape(tex.width, tex.height);
 
-		// 遍历所有像素 (二维循环)
 		for (int y = 0; y < tex.height; y++)
 		{
 			for (int x = 0; x < tex.width; x++)
 			{
-				// 获取当前像素的颜色
 				Color pixelColor = tex.GetPixel(x, y);
 
-				// 如果透明度 (alpha) 很低 (<0.1)，认为是“空”
 				if (pixelColor.a < .1f)
-					shape.cells[x, y] = Cell.Empty; // 使用你定义的静态属性 Empty
+					shape.cells[x, y] = Cell.Empty;
 				else
-					// 否则就当成一粒沙子，这里固定给白色
 					shape.cells[x, y] = new Cell { type = EMaterialType.Sand, color = Color.white };
 			}
 		}
@@ -125,16 +112,16 @@ public class ShapeManager : MonoBehaviour
 		return shape;
 	}
 
+	// Track dropped shapes and refill slots every 3 drops
 	private void OnShapeDropped(ShapeHolder holder)
 	{
-		shapeDroppedCounter++; // 统计已经放下了几个 Shape
+		shapeDroppedCounter++;
 
 		if (shapeDroppedCounter >= 3)
 		{
-			shapeDroppedCounter = 0; // 清零计数器
-			PopulateSlots();         // 重新生成新的 Shape
+			shapeDroppedCounter = 0;
+			PopulateSlots();
 		}
 	}
-
-
 }
+
